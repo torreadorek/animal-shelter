@@ -1,9 +1,9 @@
 import express,{Request,Response, Router} from 'express';
+import controller from '../controllers/auth';
+import passport from 'passport';
 
 const router:Router = express.Router();
 
-router.get('/test',(req:Request,res:Response)=>{
-    res.send('Testowy endpoint');
-});
-
+router.post('/test',controller.test);
+router.post('/google',controller.google)
 export default router;
