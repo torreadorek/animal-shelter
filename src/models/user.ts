@@ -12,7 +12,15 @@ const UserSchema = new mongoose.Schema({
         default: () =>{
             return uuidv4();
         }
-    }
+    },
+    name:String,
+    balance:Number,
+    donates:[{}],
+    walks:[{}],
+    isAdmin:Boolean,
+    appointments:[{}],
+    level:Number,
+    news:[{}]
 })
 
 export = mongoose.model('User',UserSchema)
