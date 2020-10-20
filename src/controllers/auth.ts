@@ -9,46 +9,12 @@ dotenv.config({path:'./src/config/.env'})
 
 
 export = {
-    test: async (req:Request,res:Response)=>{
-        try{
-            await User.findOneAndUpdate({
-                googleId:'123132123312'
-            },{
-                googleId:'123132123312'
-            },{
-                upsert:true,
-                new:true,
-                setDefaultsOnInsert:true
-            },(error,user)=>{
-                if(error) {
-                    console.log('error while adding user',error);
-                    res.status(403).json('failure');
-                } 
-                if(user) {
-                    console.log('added user',user);
-                    res.status(200).json('success');
-                }
-            })
-        }catch(error){
-            console.log('error',error)
-        }
-        
-    },
-    login:(req:Request,res:Response)=>{
-        //res.send(process.env.HOST)
-        res.send(`<form method="GET" action="http://${process.env.HOST}:5000/auth/google"> <button type="submit"> Zatwierdz </button> </form>`)
-    },
-    login1:(req:Request,res:Response)=>{
-        //res.send(process.env.HOST)
-        res.send(`<form method="GET" action="http://${process.env.HOST}:5000/auth/facebook"> <button type="submit"> Zatwierdz </button> </form>`)
-    },
-    google:  (req:Request,res:Response)=>{
-        console.log('ehehehe')
+    google: async (req:Request,res:Response)=>{
         try{
             const {token} = req.body   
             const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
-            client.verifyIdToken({idToken:token,audience:process.env.GOOGLE_CLIENT_ID})
-            .then( async user=>{
+            await  client.verifyIdToken({idToken:token,audience:process.env.GOOGLE_CLIENT_ID})
+            .then( async (user:any)=>{
                 const userInfo = user.getPayload()
                 await User.findOneAndUpdate({
                     serviceId:userInfo?.sub
@@ -82,9 +48,8 @@ export = {
     facebook: async (req:Request,res:Response)=>{
         try{
           const {token} = req.body
-          console.log('token',token)
             await axios.get(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`)
-            .then( async userInfo=>{
+            .then( async (userInfo:any)=>{
                 await User.findOneAndUpdate({
                     serviceId:userInfo?.id
                 },{
@@ -109,7 +74,7 @@ export = {
                 })
             })
         }catch(error){
-            console.log('eror',error)
+            console.log('error',error)
             res.status(500).json('Something went wrong')
         }
     },
@@ -126,7 +91,7 @@ export = {
                 else  res.status(403).json('failure')
             })
         }catch(error){
-
+            res.status(500).json('Something went wrong')
         }
     }   
 }
