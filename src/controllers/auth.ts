@@ -4,6 +4,7 @@ import  User from '../models/user'
 import dotenv from 'dotenv'
 import * as jwt from 'jsonwebtoken'
 import {OAuth2Client} from 'google-auth-library'
+import axios from 'axios'
 dotenv.config({path:'./src/config/.env'})
 
 
@@ -74,16 +75,14 @@ export = {
             console.log('error',error)
         }
     },
-    successFacebookRedirect:  (req:Request,res:Response)=>{
- 
+    facebook: async (req:Request,res:Response)=>{
         try{
-            const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY as string
-            const reqUser:any = req.user
-            const authId = reqUser.authId
-            let token =  jwt.sign({token:authId},TOKEN_SECRET_KEY)
-            res.cookie('authId',token,{httpOnly:true})
-            res.redirect('http://localhost:5000/auth/login1')
-            res.end()
+          const {token} = req.body
+          console.log('token',token)
+            await axios.get(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`)
+            .then(response=>{
+                console.log('response',response)
+            })
         }catch(error){
             console.log('eror',error)
             res.status(403).json('not authenticated')

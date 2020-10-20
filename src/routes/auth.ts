@@ -6,4 +6,5 @@ const router:Router = express.Router();
 
 router.post('/test',controller.test);
 router.post('/google',controller.google)
+router.post('/facebook',controller.facebook)
 export default router;
