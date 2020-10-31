@@ -34,53 +34,21 @@ const user_1 = __importDefault(require("../models/user"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const jwt = __importStar(require("jsonwebtoken"));
 const google_auth_library_1 = require("google-auth-library");
+const axios_1 = __importDefault(require("axios"));
 dotenv_1.default.config({ path: './src/config/.env' });
 module.exports = {
-    test: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            yield user_1.default.findOneAndUpdate({
-                googleId: '123132123312'
-            }, {
-                googleId: '123132123312'
-            }, {
-                upsert: true,
-                new: true,
-                setDefaultsOnInsert: true
-            }, (error, user) => {
-                if (error) {
-                    console.log('error while adding user', error);
-                    res.status(403).json('failure');
-                }
-                if (user) {
-                    console.log('added user', user);
-                    res.status(200).json('success');
-                }
-            });
-        }
-        catch (error) {
-            console.log('error', error);
-        }
-    }),
-    login: (req, res) => {
-        //res.send(process.env.HOST)
-        res.send(`<form method="GET" action="http://${process.env.HOST}:5000/auth/google"> <button type="submit"> Zatwierdz </button> </form>`);
-    },
-    login1: (req, res) => {
-        //res.send(process.env.HOST)
-        res.send(`<form method="GET" action="http://${process.env.HOST}:5000/auth/facebook"> <button type="submit"> Zatwierdz </button> </form>`);
-    },
-    google: (req, res) => {
-        console.log('ehehehe');
+    google: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const { token } = req.body;
             const client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-            client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID })
+            yield client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID })
                 .then((user) => __awaiter(void 0, void 0, void 0, function* () {
                 const userInfo = user.getPayload();
                 yield user_1.default.findOneAndUpdate({
                     serviceId: userInfo === null || userInfo === void 0 ? void 0 : userInfo.sub
                 }, {
-                    serviceId: userInfo === null || userInfo === void 0 ? void 0 : userInfo.sub
+                    serviceId: userInfo === null || userInfo === void 0 ? void 0 : userInfo.sub,
+                    name: userInfo === null || userInfo === void 0 ? void 0 : userInfo.name
                 }, {
                     upsert: true,
                     new: true,
@@ -93,29 +61,69 @@ module.exports = {
                     if (user) {
                         console.log('added user', user);
                         const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY;
-                        let token = jwt.sign({ token: userInfo === null || userInfo === void 0 ? void 0 : userInfo.sub }, TOKEN_SECRET_KEY);
-                        res.status(200).json({ token: token, email: userInfo === null || userInfo === void 0 ? void 0 : userInfo.email, name: userInfo === null || userInfo === void 0 ? void 0 : userInfo.name, picture: userInfo === null || userInfo === void 0 ? void 0 : userInfo.picture });
+                        let token = jwt.sign({ token: user.authId }, TOKEN_SECRET_KEY);
+                        res.cookie('token', token, { httpOnly: true });
+                        res.status(200).json({ email: userInfo === null || userInfo === void 0 ? void 0 : userInfo.email, name: userInfo === null || userInfo === void 0 ? void 0 : userInfo.name, picture: userInfo === null || userInfo === void 0 ? void 0 : userInfo.picture });
+                        res.end();
                     }
                 });
             }));
         }
         catch (error) {
             console.log('error', error);
+            res.status(500).json('Something went wrong');
         }
-    },
-    successFacebookRedirect: (req, res) => {
+    }),
+    facebook: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY;
-            const reqUser = req.user;
-            const authId = reqUser.authId;
-            let token = jwt.sign({ token: authId }, TOKEN_SECRET_KEY);
-            res.cookie('authId', token, { httpOnly: true });
-            res.redirect('http://localhost:5000/auth/login1');
-            res.end();
+            const { token } = req.body;
+            yield axios_1.default.get(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`)
+                .then((userInfo) => __awaiter(void 0, void 0, void 0, function* () {
+                yield user_1.default.findOneAndUpdate({
+                    serviceId: userInfo === null || userInfo === void 0 ? void 0 : userInfo.id
+                }, {
+                    serviceId: userInfo === null || userInfo === void 0 ? void 0 : userInfo.id
+                }, {
+                    upsert: true,
+                    new: true,
+                    setDefaultsOnInsert: true
+                }, (error, user) => {
+                    if (error) {
+                        console.log('error while adding user', error);
+                        res.status(403).json('failure');
+                    }
+                    if (user) {
+                        console.log('added user', user);
+                        const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY;
+                        let token = jwt.sign({ token: userInfo === null || userInfo === void 0 ? void 0 : userInfo.id }, TOKEN_SECRET_KEY);
+                        res.cookie('token', token, { httpOnly: true });
+                        res.status(200).json({ email: userInfo === null || userInfo === void 0 ? void 0 : userInfo.email, name: userInfo === null || userInfo === void 0 ? void 0 : userInfo.name, picture: userInfo === null || userInfo === void 0 ? void 0 : userInfo.picture });
+                        res.end();
+                    }
+                });
+            }));
         }
         catch (error) {
-            console.log('eror', error);
-            res.status(403).json('not authenticated');
+            console.log('error', error);
+            res.status(500).json('Something went wrong');
         }
-    }
+    }),
+    check: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { token } = req.body;
+            const decodedToken = jwt.decode(token);
+            yield user_1.default.findOne({
+                authId: decodedToken.authId
+            }).then((user) => {
+                if (user) {
+                    res.status(200).json({ name: user.name });
+                }
+                else
+                    res.status(403).json('failure');
+            });
+        }
+        catch (error) {
+            res.status(500).json('Something went wrong');
+        }
+    })
 };

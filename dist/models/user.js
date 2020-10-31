@@ -15,6 +15,14 @@ const UserSchema = new mongoose_1.default.Schema({
         default: () => {
             return uuid_1.v4();
         }
-    }
+    },
+    name: String,
+    balance: Number,
+    donates: [{}],
+    walks: [{}],
+    isAdmin: Boolean,
+    appointments: [{}],
+    level: Number,
+    news: [{}]
 });
 module.exports = mongoose_1.default.model('User', UserSchema);

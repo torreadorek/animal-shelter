@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import {v4 as uuidv4} from 'uuid';
+import UserDoc from '../interfaces/interfaces';
 
 const UserSchema = new mongoose.Schema({
     serviceId:{
@@ -23,4 +24,4 @@ const UserSchema = new mongoose.Schema({
     news:[{}]
 })
 
-export = mongoose.model('User',UserSchema)
+export = mongoose.model<UserDoc>('User',UserSchema)
