@@ -1,7 +1,8 @@
 import express, { Router,Request,Response } from 'express';
 import Animal from '../models/animal';
+import User from '../models/user';
 import multer from 'multer'; 
-
+import * as jwt from 'jsonwebtoken';
 class Animals { 
 
     private router = express.Router();
@@ -17,8 +18,8 @@ class Animals {
 
     constructor() {
         this.router.get('/overview',this.overview);     
-        this.router.post('/new',this.new);
-        this.router.post('/upload/image',this.upload.single('photo'),this.image)
+        this.router.post('/new',this.upload.single('photo'),this.new);
+        this.router.post('/upload/image',this.image)
     }
 
         overview = async (req:Request,res:Response) => {
@@ -38,18 +39,31 @@ class Animals {
 
         new =  async (req:Request,res:Response) => {
             try{
-                const {title,category,age,description,imageUrl} = req.body
-                await Animal.create({
-                    name:title,
-                    category,
-                    age,
-                    description,
-                    image:imageUrl
-                }).then(animal=>{
-                    if(animal) {
-                        res.status(200).json('inserted')
-                    } else res.status(404).json('Cannot add new animal')
+                const {name,category,age,description,token} = req.body
+                 const decodedToken:any =  jwt.decode(token)
+                 console.log('req body:',req.body)
+                 console.log('req: ',req)
+                console.log('req.file: ',req.file)
+                console.log('age: ',age)
+                const user = await User.findOne({
+                    isAdmin:true,
+                    authId:decodedToken.token
                 })
+                if(user) {
+                    console.log('USER',user)
+                    await Animal.create({
+                        name:name,
+                        category,
+                        age,
+                        description,
+                        image:req.file.filename
+                    }).then(animal=>{
+                        if(animal) {
+                            res.status(200).json({message:'inserted',image:req.file.filename})
+                        } else res.status(404).json('Cannot add new animal')
+                    })
+                } else res.status(403).json('Cannot add new animal')
+               
             }catch(error){
                 console.log('error',error)
                 res.status(500).json({error:'Something went wrong'})

@@ -13,13 +13,25 @@ class Panel {
 
     new = async (req:Request,res:Response) => {
         try{ 
-            const {token,news} = req.body
+            const {token,title,description} = req.body
             const decodedToken:any =  jwt.decode(token)
+            console.log('decoded',decodedToken)
             await User.findOneAndUpdate({
-                authId:decodedToken.authId
+                isAdmin:true,
+                authId:decodedToken.token
             },{
-                news:news
+                
+                    $push:{
+                        news:{
+                        title:title,
+                        description:description
+                        }
+                    }
+                
             },(error,user)=>{
+                console.log('error',error)
+                console.log('user',user)
+                
                 if(user) {
                     res.status(200).json('success')
                 } else res.status(404).json('Cannot add new news')

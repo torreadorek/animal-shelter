@@ -18,10 +18,16 @@ const UserSchema = new mongoose.Schema({
     balance:Number,
     donates:[{}],
     walks:[{}],
-    isAdmin:Boolean,
+    isAdmin:{
+        type:Boolean,
+        default:false
+    },
     appointments:[{}],
     level:Number,
-    news:[{}]
+    news:[{
+        title:String,
+        description:String
+    }]
 })
 
 export = mongoose.model<UserDoc>('User',UserSchema)

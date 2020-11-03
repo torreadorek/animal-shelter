@@ -18,10 +18,11 @@ class Auth  {
     google = async (req:Request,res:Response) =>{
         try{
             const {token} = req.body;   
+            console.log('token from client: ',token);
             const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-            const user = await  client.verifyIdToken({idToken:token,audience:process.env.GOOGLE_CLIENT_ID});
+            const user = await  client.verifyIdToken({idToken:token,audience:[<string>process.env.GOOGLE_CLIENT_ID,<string>process.env.MOBILE_GOOGLE_CLIENT_ID]});
             const payload= user.getPayload();  
-
+            console.log('payload: ',payload)
              if (user) {
                 await User.findOneAndUpdate({
                     serviceId:payload!.sub
@@ -43,7 +44,7 @@ class Auth  {
                         const TOKEN_SECRET_KEY = <string>process.env.TOKEN_SECRET_KEY;
                         let token =  jwt.sign({token:user.authId},TOKEN_SECRET_KEY);
                         res.cookie('token',token,{httpOnly:true});
-                        res.status(200).json({token:token,name:user.name});
+                        res.status(200).json({token:token,name:user.name,isAdmin:user.isAdmin});
                         res.end();
                     }
                 })
@@ -57,12 +58,14 @@ class Auth  {
     facebook = async (req:Request,res:Response) =>{
         try{
             const {token} = req.body
+            console.log('TOKEN: ',token);
               await axios.get(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`)
               .then( async (userInfo:any)=>{
                   await User.findOneAndUpdate({
                       serviceId:userInfo.id
                   },{
-                      serviceId:userInfo.id
+                      serviceId:userInfo.id,
+                      name:userInfo.data.name
                   },{
                       upsert:true,
                       new:true,
@@ -74,10 +77,11 @@ class Auth  {
                       } 
                       if(user) {
                           console.log('added user',user)
+                          console.log('facebook return user: ',userInfo.data)
                           const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY as string
                           let token =  jwt.sign({token:userInfo?.id},TOKEN_SECRET_KEY)
                           res.cookie('token',token,{httpOnly:true})
-                          res.status(200).json({email:userInfo.email,name:userInfo.name,picture:userInfo.picture});
+                          res.status(200).json({token:token,name:userInfo.data.name,isAdmin:user.isAdmin});
                           res.end()
                       }
                   })
@@ -91,12 +95,16 @@ class Auth  {
         check = async (req:Request,res:Response) => {
             try{
                 const {token} = req.body
+                console.log('token: ',token);
+
                 const decodedToken:any =  jwt.decode(token)
+                console.log('decoded: ',decodedToken);
                 await User.findOne({
-                    authId:decodedToken.authId
+                    authId:decodedToken.token
                 }).then((user:any)=>{
                     if(user) {
-                        res.status(200).json({name:user.name})
+                        console.log('user: ',user)
+                        res.status(200).json({name:user.name,isAdmin:user.isAdmin})
                     } 
                     else  res.status(403).json('failure')
                 })
