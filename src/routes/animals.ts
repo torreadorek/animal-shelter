@@ -41,6 +41,8 @@ class Animals {
             try{
                 const {name,category,age,description,token} = req.body
                  const decodedToken:any =  jwt.decode(token)
+                 console.log('token: ',token)
+                 console.log('decoded: ',decodedToken)
                 const user = await User.findOne({
                     isAdmin:true,
                     authId:decodedToken.token
