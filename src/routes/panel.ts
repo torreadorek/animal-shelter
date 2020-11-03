@@ -15,7 +15,6 @@ class Panel {
         try{ 
             const {token,title,description} = req.body
             const decodedToken:any =  jwt.decode(token)
-            console.log('decoded',decodedToken)
             await User.findOneAndUpdate({
                 isAdmin:true,
                 authId:decodedToken.token
@@ -29,9 +28,6 @@ class Panel {
                     }
                 
             },(error,user)=>{
-                console.log('error',error)
-                console.log('user',user)
-                
                 if(user) {
                     res.status(200).json('success')
                 } else res.status(404).json('Cannot add new news')

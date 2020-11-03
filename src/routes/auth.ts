@@ -18,11 +18,9 @@ class Auth  {
     google = async (req:Request,res:Response) =>{
         try{
             const {token} = req.body;   
-            console.log('token from client: ',token);
             const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
             const user = await  client.verifyIdToken({idToken:token,audience:[<string>process.env.GOOGLE_CLIENT_ID,<string>process.env.MOBILE_GOOGLE_CLIENT_ID]});
             const payload= user.getPayload();  
-            console.log('payload: ',payload)
              if (user) {
                 await User.findOneAndUpdate({
                     serviceId:payload!.sub
@@ -34,9 +32,7 @@ class Auth  {
                     new:true,
                     setDefaultsOnInsert:true
                 },(error,user)=>{
-                   console.log('user',user)
                     if(error) {
-                        console.log('error while adding user',error);
                         res.status(403).json('failure');
                     } 
                     if(user) {
@@ -50,7 +46,6 @@ class Auth  {
                 })
             } 
         }catch(error) {
-            console.log('error',error)
             res.status(500).json('Something went wrong')
         }
     }   
@@ -72,12 +67,9 @@ class Auth  {
                       setDefaultsOnInsert:true
                   },(error,user)=>{
                       if(error) {
-                          console.log('error while adding user',error);
                           res.status(403).json('failure');
                       } 
                       if(user) {
-                          console.log('added user',user)
-                          console.log('facebook return user: ',userInfo.data)
                           const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY as string
                           let token =  jwt.sign({token:userInfo?.id},TOKEN_SECRET_KEY)
                           res.cookie('token',token,{httpOnly:true})
@@ -87,7 +79,6 @@ class Auth  {
                   })
               })
           }catch(error){
-              console.log('error',error)
               res.status(500).json('Something went wrong')
           }
       }
@@ -95,15 +86,11 @@ class Auth  {
         check = async (req:Request,res:Response) => {
             try{
                 const {token} = req.body
-                console.log('token: ',token);
-
                 const decodedToken:any =  jwt.decode(token)
-                console.log('decoded: ',decodedToken);
                 await User.findOne({
                     authId:decodedToken.token
                 }).then((user:any)=>{
                     if(user) {
-                        console.log('user: ',user)
                         res.status(200).json({name:user.name,isAdmin:user.isAdmin})
                     } 
                     else  res.status(403).json('failure')
