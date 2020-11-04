@@ -28,7 +28,7 @@ class Animals {
                     if(animals) {
                         res.status(200).json(animals)
                     } else  { 
-                        res.status(404).json({message:'There is no animals'})
+                        res.status(403).json({message:'There is no animals'})
                     }
                 })
             }catch(error){
@@ -57,7 +57,7 @@ class Animals {
                     }).then(animal=>{
                         if(animal) {
                             res.status(200).json({message:'inserted',image:req.file.filename})
-                        } else res.status(404).json('Cannot add new animal')
+                        } else res.status(403).json('Cannot add new animal')
                     })
                 } else res.status(403).json('Cannot add new animal')
                

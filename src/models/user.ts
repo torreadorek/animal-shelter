@@ -24,9 +24,8 @@ const UserSchema = new mongoose.Schema({
     },
     appointments:[{}],
     level:Number,
-    news:[{
-        title:String,
-        description:String
+    survey:[{
+        answers:{}
     }]
 })
 
