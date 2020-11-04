@@ -30,7 +30,7 @@ class Animals {
                         console.log(animals)
                         res.status(200).json(animals)
                     } else  { 
-                        res.status(403).json({message:'There is no animals'})
+                        res.status(404).json({message:'There is no animals'})
                     }
                 })
             }catch(error){
@@ -76,9 +76,6 @@ class Animals {
         delete = async (req:Request,res:Response) => {
             const {token,id} = req.body;
             const decodedToken:any = jwt.decode(token);
-            console.log('token:',token)
-            console.log('decodedToken: ',decodedToken)
-            console.log('id',id)
             try{ 
                 await User.findOne({authId:decodedToken.token})
                 .then( async user=>{
@@ -87,11 +84,9 @@ class Animals {
                             _id:id
                         })
                         if(animal) { 
-                            console.log('animals: ',animal)
-                            console.log('user: ',user)
                             res.status(200).json('success')
                         } 
-                        else res.status(403).json('failure')
+                        else res.status(404).json('failure')
                     } else res.status(403).json('failure')
                 })
             }catch(error) {

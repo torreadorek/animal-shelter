@@ -47,7 +47,7 @@ class Panel {
 
         } catch(error) {
             console.log("eror",error)
-            res.status(500).json('failure')
+            res.status(500).json('Something went wrong')
         }
     }
 
@@ -58,6 +58,7 @@ class Panel {
             await User.findOneAndUpdate({
                 authId:decodedToken.token
             },{
+                    
                     $push:{
                         survey:{
                             answers

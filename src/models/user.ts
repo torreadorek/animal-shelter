@@ -25,6 +25,7 @@ const UserSchema = new mongoose.Schema({
     appointments:[{}],
     level:Number,
     survey:[{
+        id:String,
         answers:{},
         date:{ 
             type:Date,
