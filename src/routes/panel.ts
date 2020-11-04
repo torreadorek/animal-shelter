@@ -2,7 +2,6 @@ import express,{Request,Response} from 'express';
 import User from '../models/user';
 import News  from '../models/news';
 import jwt from 'jsonwebtoken';
-import {GoogleSpreadsheet} from 'google-spreadsheet';
 
 
 class Panel {
@@ -12,7 +11,7 @@ class Panel {
     constructor() {
         this.router.post('/news/new',this.newNews);
         this.router.get('/news/overview',this.getNews);
-        this.router.get('/survey/new',this.newSurvey);
+        this.router.post('/survey/new',this.newSurvey);
         this.router.get('/survey/overview',this.getSurvey);
     }
 
@@ -30,7 +29,7 @@ class Panel {
             })
 
         } catch(error) {
-            res.status(500).json('failure')
+            res.status(500).json('Something went wrong')
         }
     }
 
@@ -38,7 +37,7 @@ class Panel {
         try {
             await News.find()
             .limit(5)
-            .sort('date')
+            .sort([['date',-1]])
             .then(news=>{
                 if(news) { 
                     console.log(news)
@@ -72,12 +71,25 @@ class Panel {
             })
         }catch(error) {
             console.log('error',error)
-            res.status(500).json('failure')
+            res.status(500).json('Something went wrong')
         }
     }
 
-    getSurvey = (req:Request,res:Response) => {
-
+    getSurvey = async (req:Request,res:Response) => {
+        try{
+            const {token,answers} = req.body
+            const decodedToken:any =  jwt.decode(token)
+            await User.findOne({authId:decodedToken.token})
+            .select('survey')
+            .then(surveys=>{
+                if(surveys) {
+                    res.status(200).json(surveys)
+                } else res.status(403).json('failure')
+            })
+        }catch(error) {
+            console.log('error',error)
+            res.status(500).json('Something went wrong')
+        }
     }
 }
 

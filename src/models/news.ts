@@ -5,7 +5,7 @@ const NewsSchema = new mongoose.Schema({
     description:String,
     date:{
         type:Date,
-        default:new Date()
+        default:new Date(Date.now())
     }
 })
 

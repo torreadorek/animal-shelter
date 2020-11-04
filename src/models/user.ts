@@ -25,7 +25,11 @@ const UserSchema = new mongoose.Schema({
     appointments:[{}],
     level:Number,
     survey:[{
-        answers:{}
+        answers:{},
+        date:{ 
+            type:Date,
+            default:new Date(Date.now())
+        }
     }]
 })
 

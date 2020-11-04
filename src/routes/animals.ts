@@ -19,13 +19,15 @@ class Animals {
     constructor() {
         this.router.get('/overview',this.overview);     
         this.router.post('/new',this.upload.single('photo'),this.new);
-        this.router.post('/upload/image',this.image)
+        this.router.post('/upload/image',this.image);
+        this.router.delete('/delete',this.delete);
     }
 
         overview = async (req:Request,res:Response) => {
             try{
                 await Animal.find({}).then(animals=>{
                     if(animals) {
+                        console.log(animals)
                         res.status(200).json(animals)
                     } else  { 
                         res.status(403).json({message:'There is no animals'})
@@ -69,6 +71,25 @@ class Animals {
 
         image = (req:Request,res:Response)=>{
             res.status(200).json({name:req.file.filename})
+        }
+
+        delete = async (req:Request,res:Response) => {
+            const {token,id} = req.body;
+            const decodedToken:any = jwt.decode(token);
+            try{ 
+                await User.findOne({authId:decodedToken.token})
+                .then( async user=>{
+                    if(user) {
+                        const animal = await Animal.deleteOne({
+                            _id:id
+                        })
+                        if(animal) res.status(200).json('success')
+                        else res.status(403).json('failure')
+                    } else res.status(403).json('failure')
+                })
+            }catch(error) {
+                res.status(500).json('Something went wrong');
+            }
         }
 }
 
