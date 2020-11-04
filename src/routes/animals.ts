@@ -83,11 +83,16 @@ class Animals {
                         const animal = await Animal.deleteOne({
                             _id:id
                         })
-                        if(animal) res.status(200).json('success')
+                        if(animal) { 
+                            console.log('animals: ',animal)
+                            console.log('user: ',user)
+                            res.status(200).json('success')
+                        } 
                         else res.status(403).json('failure')
                     } else res.status(403).json('failure')
                 })
             }catch(error) {
+                console.log('error',error)
                 res.status(500).json('Something went wrong');
             }
         }

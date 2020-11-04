@@ -94,15 +94,3 @@ class Panel {
 }
 
 export default Panel
-
- //     const doc = new GoogleSpreadsheet(<string>process.env.GOOGLE_API_SPREADSHEET_ID);
-    
-        //    await doc.useServiceAccountAuth(require('../../credentials.json'));
-            
-        //    await doc.loadInfo();
-          
-        //     const sheet = doc.sheetsByIndex[0];
-        //     const data = await sheet.getRows();
-        //     const editedData = data.map((row,index)=>{ return {answer1:row._rawData[1]}});
-        //     console.log('data',data );
-        //     console.log('editedData: ',editedData);
