@@ -76,6 +76,9 @@ class Animals {
         delete = async (req:Request,res:Response) => {
             const {token,id} = req.body;
             const decodedToken:any = jwt.decode(token);
+            console.log('token:',token)
+            console.log('decodedToken: ',decodedToken)
+            console.log('id',id)
             try{ 
                 await User.findOne({authId:decodedToken.token})
                 .then( async user=>{
