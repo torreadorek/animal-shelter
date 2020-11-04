@@ -42,7 +42,7 @@ class Panel {
             .then(news=>{
                 if(news) { 
                     console.log(news)
-                    res.status(200).json('success')
+                    res.status(200).json({message:'success',news:news})
                 }
             })
 
