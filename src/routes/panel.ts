@@ -12,7 +12,7 @@ class Panel {
         this.router.post('/news/new',this.newNews);
         this.router.get('/news/overview',this.getNews);
         this.router.post('/survey/new',this.newSurvey);
-        this.router.get('/survey/overview',this.getSurvey);
+        this.router.put('/survey/overview',this.getSurveys);
     }
 
     newNews = async (req:Request,res:Response) => {
@@ -76,16 +76,24 @@ class Panel {
         }
     }
 
-    getSurvey = async (req:Request,res:Response) => {
+    getSurveys = async (req:Request,res:Response) => {
         try{
-            const {token,answers} = req.body
+            console.log(req.headers)
+             const {token} = req.body
+            // const token:string = req.headers.token
+            console.log("Req: ",req.headers);
             const decodedToken:any =  jwt.decode(token)
             await User.findOne({authId:decodedToken.token})
-            .select('survey')
-            .then(surveys=>{
-                if(surveys) {
-                    res.status(200).json(surveys)
-                } else res.status(403).json('failure')
+            .then( async user=>{
+                if(user) {
+                    await User.find()
+                    .select(['survey','name'])
+                    .then(surveys=>{
+                        if(surveys) {
+                            res.status(200).json(surveys)
+                        } else res.status(403).json('failure');
+                    })
+                } else res.status(403).json('failure');
             })
         }catch(error) {
             console.log('error',error)
