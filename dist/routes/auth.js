@@ -112,7 +112,7 @@ class Auth {
                 const { token } = req.body;
                 const decodedToken = jwt.decode(token);
                 yield user_1.default.findOne({
-                    authId: decodedToken.token
+                    authId: decodedToken.authId
                 }).then((user) => {
                     if (user) {
                         res.status(200).json({ name: user.name, isAdmin: user.isAdmin });

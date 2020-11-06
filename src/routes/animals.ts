@@ -48,7 +48,7 @@ class Animals {
                  console.log('decoded: ',decodedToken)
                 const user = await User.findOne({
                     isAdmin:true,
-                    authId:decodedToken.token
+                    authId:decodedToken.authId
                 })
                 if(user) {
                     await Animal.create({
@@ -78,7 +78,7 @@ class Animals {
             const {token,id} = req.body;
             const decodedToken:any = jwt.decode(token);
             try{ 
-                await User.findOne({authId:decodedToken.token})
+                await User.findOne({authId:decodedToken.authId})
                 .then( async user=>{
                     if(user) {
                         const animal = await Animal.deleteOne({

@@ -73,7 +73,7 @@ class Animals {
                 console.log('decoded: ', decodedToken);
                 const user = yield user_1.default.findOne({
                     isAdmin: true,
-                    authId: decodedToken.token
+                    authId: decodedToken.authId
                 });
                 if (user) {
                     yield animal_1.default.create({
@@ -105,7 +105,7 @@ class Animals {
             const { token, id } = req.body;
             const decodedToken = jwt.decode(token);
             try {
-                yield user_1.default.findOne({ authId: decodedToken.token })
+                yield user_1.default.findOne({ authId: decodedToken.authId })
                     .then((user) => __awaiter(this, void 0, void 0, function* () {
                     if (user) {
                         const animal = yield animal_1.default.deleteOne({

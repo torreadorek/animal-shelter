@@ -58,7 +58,7 @@ class Panel {
             const {token,answers} = req.body
             const decodedToken:any =  jwt.decode(token)
           const user =  await User.updateOne({
-                authId:decodedToken.token
+                authId:decodedToken.authId
             },{   
                     $push:{
                         survey:{
@@ -81,7 +81,7 @@ class Panel {
             console.log(req.headers)
              const {token} = req.body
             const decodedToken:any =  jwt.decode(token)
-          const user = await User.findOne({authId:decodedToken.token})
+          const user = await User.findOne({authId:decodedToken.authId})
             .then( async user=>{
                 if(user) {
                     await User.find()
@@ -114,7 +114,7 @@ class Panel {
             console.log('animals: ',numbersOfAnimals.length)
 
             // await User.findOneAndUpdate({
-            //     authId:decodedToken.token
+            //     authId:decodedToken.authId
             // },{
             //     $push:{
             //         walks:{

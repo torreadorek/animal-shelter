@@ -33,15 +33,15 @@ class Auth  {
                     new:true,
                     setDefaultsOnInsert:true
                 },(error,user)=>{
-                    if(error) {
-                        res.status(403).json('failure');
-                    } 
+                    if(error) res.status(403).json('failure');
                     if(user) {
-                        
                         const TOKEN_SECRET_KEY = <string>process.env.TOKEN_SECRET_KEY;
                         let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY);
-                        res.cookie('token',token,{httpOnly:true});
-                        res.status(200).json({token:token,name:user.name,isAdmin:user.isAdmin});
+                        if(payload!.azp===process.env.GOOGLE_CLIENT_ID) {
+                            res.cookie('token',token,{httpOnly:true});
+                            res.status(200).json({message:'weird situation',name:user.name,isAdmin:user.isAdmin});
+                        } 
+                        if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({token:token,name:user.name,isAdmin:user.isAdmin});
                         res.end();
                     }
                 })

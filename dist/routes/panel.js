@@ -60,7 +60,7 @@ class Panel {
                 const { token, answers } = req.body;
                 const decodedToken = jsonwebtoken_1.default.decode(token);
                 const user = yield user_1.default.updateOne({
-                    authId: decodedToken.token
+                    authId: decodedToken.authId
                 }, {
                     $push: {
                         survey: {
@@ -84,7 +84,7 @@ class Panel {
                 console.log(req.headers);
                 const { token } = req.body;
                 const decodedToken = jsonwebtoken_1.default.decode(token);
-                const user = yield user_1.default.findOne({ authId: decodedToken.token })
+                const user = yield user_1.default.findOne({ authId: decodedToken.authId })
                     .then((user) => __awaiter(this, void 0, void 0, function* () {
                     if (user) {
                         yield user_1.default.find()
@@ -111,7 +111,7 @@ class Panel {
                 const { token, startTime, endTime, animal_id, date } = req.body;
                 const decodedToken = jsonwebtoken_1.default.decode(token);
                 yield user_1.default.updateOne({
-                    authId: decodedToken.token
+                    authId: decodedToken.authId
                 }, {
                     $push: {
                         walks: {

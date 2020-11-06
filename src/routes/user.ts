@@ -19,13 +19,13 @@ class User {
              const decodedToken:any = jwt.decode(token);
              console.log('new donate')
              const user = await UserModel.findOne({
-                     authId:decodedToken.token
+                     authId:decodedToken.authId
                  })
                  if(user) {
                      const balance:Number= parseInt(user!.balance.toString()) + parseInt(amount);
                      console.log('balance: ',balance)
                      await UserModel.updateOne({
-                        authId:decodedToken.token
+                        authId:decodedToken.authId
                     },{
                         $push:{
                             donates:{
