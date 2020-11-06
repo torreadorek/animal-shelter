@@ -20,6 +20,7 @@ class Auth  {
             const {token} = req.body;   
             const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
             const user = await  client.verifyIdToken({idToken:token,audience:[<string>process.env.GOOGLE_CLIENT_ID,<string>process.env.MOBILE_GOOGLE_CLIENT_ID]});
+            console.log('user: ',user)
             const payload= user.getPayload();  
              if (user) {
                 await User.findOneAndUpdate({
@@ -36,9 +37,9 @@ class Auth  {
                         res.status(403).json('failure');
                     } 
                     if(user) {
-                        console.log('added user',user)
+                        
                         const TOKEN_SECRET_KEY = <string>process.env.TOKEN_SECRET_KEY;
-                        let token =  jwt.sign({token:user.authId},TOKEN_SECRET_KEY);
+                        let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY);
                         res.cookie('token',token,{httpOnly:true});
                         res.status(200).json({token:token,name:user.name,isAdmin:user.isAdmin});
                         res.end();

@@ -28,6 +28,7 @@ class Animals {
                 await Animal.find({}).then(animals=>{
                     if(animals) {
                         console.log(animals)
+                        console.log('req cookies: ',req.cookies)
                         res.status(200).json(animals)
                     } else  { 
                         res.status(404).json({message:'There is no animals'})
