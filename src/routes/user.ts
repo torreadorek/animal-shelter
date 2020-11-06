@@ -9,7 +9,7 @@ class User {
     private router = express.Router();
 
     constructor(){
-        this.router.post('/donates/new',this.newDonate);
+        this.router.post('/donation/new',this.newDonate);
     }
 
      newDonate =  async (req:Request,res:Response) => {
