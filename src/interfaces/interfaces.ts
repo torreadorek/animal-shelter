@@ -4,5 +4,6 @@ export default interface UserDoc extends mongoose.Document {
     authId:string,
     name:string,
     isAdmin:boolean,
-    balance:Number
+    balance:Number,
+    email:String
 }

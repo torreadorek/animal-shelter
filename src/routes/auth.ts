@@ -3,6 +3,8 @@ import {LoginTicket, OAuth2Client, TokenPayload} from 'google-auth-library';
 import  User from '../models/user';
 import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
+import checkToken from '../utils/checkToken';
+require('dotenv').config({path:__dirname+`/config/.env`});
 
 
 class Auth  {
@@ -39,9 +41,9 @@ class Auth  {
                         let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY);
                         if(payload!.azp===process.env.GOOGLE_CLIENT_ID) {
                             res.cookie('token',token,{httpOnly:true});
-                            res.status(200).json({name:user.name,isAdmin:user.isAdmin,balance:user.balance});
+                            res.status(200).json({name:user.name,email:user.email,isAdmin:user.isAdmin,balance:user.balance});
                         } 
-                        if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({token:token,name:user.name,isAdmin:user.isAdmin,balance:user.balance});
+                        if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({token:token,name:user.name,email:user.email,isAdmin:user.isAdmin,balance:user.balance});
                         res.end();
                     }
                 })
@@ -88,9 +90,7 @@ class Auth  {
 
         check = async (req:Request,res:Response) => {
             try{
-                const {token} = req.body || req.cookies
-                const decodedToken:any =  jwt.decode(token)
-                console.log('token: ',token)
+                const decodedToken:any = checkToken(req.body.token,req.body.cookies)
                 await User.findOne({
                     authId:decodedToken.authId
                 }).then((user:any)=>{
@@ -101,12 +101,11 @@ class Auth  {
                     else  res.status(403).json('failure')
                 })
             }catch(error){
+                console.log('error',error)
                 res.status(500).json('Something went wrong')
             }
         }
-
-
-
+        
 }
 
    

@@ -3,6 +3,8 @@ import Animal from '../models/animal';
 import User from '../models/user';
 import multer from 'multer'; 
 import * as jwt from 'jsonwebtoken';
+import checkToken from '../utils/checkToken';
+
 class Animals { 
 
     private router = express.Router();
@@ -42,9 +44,9 @@ class Animals {
 
         new =  async (req:Request,res:Response) => {
             try{
-                const {name,category,age,description,token} = req.body
-                 const decodedToken:any =  jwt.decode(token)
-                 console.log('token: ',token)
+                const {name,category,age,description} = req.body
+                 const decodedToken:any =  checkToken(req.body.token,req.body.cookies)
+                
                  console.log('decoded: ',decodedToken)
                 const user = await User.findOne({
                     isAdmin:true,
@@ -75,8 +77,8 @@ class Animals {
         }
 
         delete = async (req:Request,res:Response) => {
-            const {token,id} = req.body;
-            const decodedToken:any = jwt.decode(token);
+            const {id} = req.body;
+            const decodedToken:any = checkToken(req.body.token,req.body.cookies)
             try{ 
                 await User.findOne({authId:decodedToken.authId})
                 .then( async user=>{

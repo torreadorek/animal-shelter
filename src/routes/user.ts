@@ -2,7 +2,7 @@ import express,{Application,Request,Response} from 'express';
 import  UserModel from '../models/user';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
-
+import checkToken from '../utils/checkToken';
 
 class User {
 
@@ -13,10 +13,9 @@ class User {
     }
 
      newDonate =  async (req:Request,res:Response) => {
-         try{
-             const {token} = req.body
+         try{      
              const amount:string = req.body.amount;
-             const decodedToken:any = jwt.decode(token);
+             const decodedToken:any = checkToken(req.body.token,req.body.cookies)
              console.log('new donate')
              const user = await UserModel.findOne({
                      authId:decodedToken.authId
