@@ -88,7 +88,7 @@ class Auth  {
 
         check = async (req:Request,res:Response) => {
             try{
-                const {token} = req.body
+                const {token} = req.body || req.cookies
                 const decodedToken:any =  jwt.decode(token)
                 console.log('token: ',token)
                 await User.findOne({
