@@ -22,6 +22,7 @@ class App {
         this.app.use('/animals',controllers.animals.router);
         this.app.use('/auth',controllers.auth.router);
         this.app.use('/panel',controllers.panel.router);
+        this.app.use('/user',controllers.user.router);
         this.app.use('/images',express.static(__dirname+'/images'));
     }
 

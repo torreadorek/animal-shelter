@@ -19,10 +19,29 @@ const UserSchema = new mongoose_1.default.Schema({
     name: String,
     balance: Number,
     donates: [{}],
-    walks: [{}],
-    isAdmin: Boolean,
+    walks: [{
+            distance: Number,
+            animal_id: String,
+            date: {
+                type: Date,
+                default: new Date(Date.now())
+            },
+            startTime: String,
+            endTime: String
+        }],
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
     appointments: [{}],
     level: Number,
-    news: [{}]
+    survey: [{
+            id: String,
+            answers: {},
+            date: {
+                type: Date,
+                default: new Date(Date.now())
+            }
+        }]
 });
 module.exports = mongoose_1.default.model('User', UserSchema);

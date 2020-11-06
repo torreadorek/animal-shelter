@@ -15,9 +15,27 @@ const UserSchema = new mongoose.Schema({
         }
     },
     name:String,
-    balance:Number,
-    donates:[{}],
-    walks:[{}],
+    balance:{
+        type:Number,
+        default:0
+    },
+    donates:[{
+        amount:mongoose.Types.Decimal128,
+        date:{
+            type:Date,
+            default:new Date(Date.now())
+        }
+    }],
+    walks:[{
+        distance:Number,
+        animal_id:String,
+        date:{
+            type:Date,
+            default:new Date(Date.now())
+        },
+        startTime:String,
+        endTime:String
+    }],
     isAdmin:{
         type:Boolean,
         default:false

@@ -17,10 +17,10 @@ class App {
         this.initializeRoutes(controllers);
     }
     initializeRoutes(controllers) {
-        this.app.use('/animals', controllers.animals.router),
-            this.app.use('/auth', controllers.auth.router);
+        this.app.use('/animals', controllers.animals.router);
+        this.app.use('/auth', controllers.auth.router);
         this.app.use('/panel', controllers.panel.router);
-        this.app.use('/images', express_1.default.static('images'));
+        this.app.use('/images', express_1.default.static(__dirname + '/images'));
     }
     initializeMiddlewares() {
         this.app.use(body_parser_1.default.urlencoded({ extended: false }));

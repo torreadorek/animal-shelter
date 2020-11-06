@@ -43,7 +43,7 @@ class Auth {
             try {
                 const { token } = req.body;
                 const client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-                const user = yield client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID });
+                const user = yield client.verifyIdToken({ idToken: token, audience: [process.env.GOOGLE_CLIENT_ID, process.env.MOBILE_GOOGLE_CLIENT_ID] });
                 const payload = user.getPayload();
                 if (user) {
                     yield user_1.default.findOneAndUpdate({
@@ -56,9 +56,7 @@ class Auth {
                         new: true,
                         setDefaultsOnInsert: true
                     }, (error, user) => {
-                        console.log('user', user);
                         if (error) {
-                            console.log('error while adding user', error);
                             res.status(403).json('failure');
                         }
                         if (user) {
@@ -66,48 +64,46 @@ class Auth {
                             const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY;
                             let token = jwt.sign({ token: user.authId }, TOKEN_SECRET_KEY);
                             res.cookie('token', token, { httpOnly: true });
-                            res.status(200).json({ token: token, name: user.name });
+                            res.status(200).json({ token: token, name: user.name, isAdmin: user.isAdmin });
                             res.end();
                         }
                     });
                 }
             }
             catch (error) {
-                console.log('error', error);
                 res.status(500).json('Something went wrong');
             }
         });
         this.facebook = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { token } = req.body;
+                console.log('TOKEN: ', token);
                 yield axios_1.default.get(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`)
                     .then((userInfo) => __awaiter(this, void 0, void 0, function* () {
                     yield user_1.default.findOneAndUpdate({
                         serviceId: userInfo.id
                     }, {
-                        serviceId: userInfo.id
+                        serviceId: userInfo.id,
+                        name: userInfo.data.name
                     }, {
                         upsert: true,
                         new: true,
                         setDefaultsOnInsert: true
                     }, (error, user) => {
                         if (error) {
-                            console.log('error while adding user', error);
                             res.status(403).json('failure');
                         }
                         if (user) {
-                            console.log('added user', user);
                             const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY;
                             let token = jwt.sign({ token: userInfo === null || userInfo === void 0 ? void 0 : userInfo.id }, TOKEN_SECRET_KEY);
                             res.cookie('token', token, { httpOnly: true });
-                            res.status(200).json({ email: userInfo.email, name: userInfo.name, picture: userInfo.picture });
+                            res.status(200).json({ token: token, name: userInfo.data.name, isAdmin: user.isAdmin });
                             res.end();
                         }
                     });
                 }));
             }
             catch (error) {
-                console.log('error', error);
                 res.status(500).json('Something went wrong');
             }
         });
@@ -116,10 +112,10 @@ class Auth {
                 const { token } = req.body;
                 const decodedToken = jwt.decode(token);
                 yield user_1.default.findOne({
-                    authId: decodedToken.authId
+                    authId: decodedToken.token
                 }).then((user) => {
                     if (user) {
-                        res.status(200).json({ name: user.name });
+                        res.status(200).json({ name: user.name, isAdmin: user.isAdmin });
                     }
                     else
                         res.status(403).json('failure');

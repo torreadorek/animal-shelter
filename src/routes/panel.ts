@@ -1,6 +1,7 @@
 import express,{Request,Response} from 'express';
 import User from '../models/user';
 import News  from '../models/news';
+import Animal from '../models/animal';
 import jwt from 'jsonwebtoken';
 
 
@@ -13,6 +14,7 @@ class Panel {
         this.router.get('/news/overview',this.getNews);
         this.router.post('/survey/new',this.newSurvey);
         this.router.put('/survey/overview',this.getSurveys);
+        this.router.post('/walk/new',this.newWalk);
     }
 
     newNews = async (req:Request,res:Response) => {
@@ -55,21 +57,19 @@ class Panel {
         try{
             const {token,answers} = req.body
             const decodedToken:any =  jwt.decode(token)
-            await User.findOneAndUpdate({
+          const user =  await User.updateOne({
                 authId:decodedToken.token
-            },{
-                    
+            },{   
                     $push:{
                         survey:{
                             answers
                         }
                     }
                 
-            },(error,user)=>{
-                if(user) {
-                    res.status(200).json('success')
-                } else res.status(403).json('Cannot add new news')
             })
+            if(user) {
+                res.status(200).json('success')
+            } else res.status(403).json('Cannot add new news')
         }catch(error) {
             console.log('error',error)
             res.status(500).json('Something went wrong')
@@ -80,10 +80,8 @@ class Panel {
         try{
             console.log(req.headers)
              const {token} = req.body
-            // const token:string = req.headers.token
-            console.log("Req: ",req.headers);
             const decodedToken:any =  jwt.decode(token)
-            await User.findOne({authId:decodedToken.token})
+          const user = await User.findOne({authId:decodedToken.token})
             .then( async user=>{
                 if(user) {
                     await User.find()
@@ -98,6 +96,42 @@ class Panel {
         }catch(error) {
             console.log('error',error)
             res.status(500).json('Something went wrong')
+        }
+    }
+
+    newWalk = async (req:Request,res:Response) => {
+        try{ 
+            const {token,startTime,endTime,date} = req.body
+            const decodedToken:any = jwt.decode(token)
+            const numbersOfWalks = await User.find({
+              walks:{
+                  date:date,
+                  startTime:startTime
+              }  
+            })
+            const numbersOfAnimals = await Animal.find()
+            console.log('walks: ',numbersOfWalks)
+            console.log('animals: ',numbersOfAnimals.length)
+
+            // await User.findOneAndUpdate({
+            //     authId:decodedToken.token
+            // },{
+            //     $push:{
+            //         walks:{
+            //             date:date,
+            //             startTime:startTime,
+            //             endTime:endTime
+            //         }
+            //     }
+            // })
+            // .then(user=>{
+            //     if(user) {
+            //         res.status(200).json('success')
+            //     } else res.status(403).json('failure')
+            // })
+        }catch(error) {
+            console.log('error:',error)
+            res.status(500).json('Something went wrong');
         }
     }
 }
