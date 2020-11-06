@@ -88,9 +88,11 @@ class Auth  {
             try{
                 const {token} = req.body
                 const decodedToken:any =  jwt.decode(token)
+                console.log('token: ',token)
                 await User.findOne({
                     authId:decodedToken.token
                 }).then((user:any)=>{
+                    console.log('user',user)
                     if(user) {
                         res.status(200).json({name:user.name,isAdmin:user.isAdmin})
                     } 
