@@ -90,7 +90,7 @@ class Auth  {
                 const decodedToken:any =  jwt.decode(token)
                 console.log('token: ',token)
                 await User.findOne({
-                    authId:decodedToken.token
+                    authId:decodedToken.authId
                 }).then((user:any)=>{
                     console.log('user',user)
                     if(user) {
