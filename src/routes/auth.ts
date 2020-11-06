@@ -39,9 +39,9 @@ class Auth  {
                         let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY);
                         if(payload!.azp===process.env.GOOGLE_CLIENT_ID) {
                             res.cookie('token',token,{httpOnly:true});
-                            res.status(200).json({name:user.name,isAdmin:user.isAdmin});
+                            res.status(200).json({name:user.name,isAdmin:user.isAdmin,balance:user.balance});
                         } 
-                        if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({message:'mobile',token:token,name:user.name,isAdmin:user.isAdmin});
+                        if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({token:token,name:user.name,isAdmin:user.isAdmin,balance:user.balance});
                         res.end();
                     }
                 })
@@ -71,6 +71,8 @@ class Auth  {
                           res.status(403).json('failure');
                       } 
                       if(user) {
+                          console.log('user: ',user);
+                          console.log('userInfo',userInfo);
                           const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY as string
                           let token =  jwt.sign({token:userInfo?.id},TOKEN_SECRET_KEY)
                           res.cookie('token',token,{httpOnly:true})
