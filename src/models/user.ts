@@ -28,7 +28,6 @@ const UserSchema = new mongoose.Schema({
     }],
     walks:[{
         distance:Number,
-        animal_id:String,
         date:{
             type:Date,
             default:new Date(Date.now())
@@ -43,7 +42,12 @@ const UserSchema = new mongoose.Schema({
     appointments:[{}],
     level:Number,
     survey:[{
-        id:String,
+        id:{
+            type:String,
+            default: () =>{
+            return uuidv4();
+        }
+        },
         answers:{},
         date:{ 
             type:Date,

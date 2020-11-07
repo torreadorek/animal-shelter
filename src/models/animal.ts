@@ -10,11 +10,7 @@ const AnimalSchema = new mongoose.Schema({
     breed:String,
     colour:String,
     image:String,
-    isAdopted:Boolean,
-    owner:{
-        type:[{}],
-        default:''
-    }
+    isAdopted:Boolean
 })
 
 export = mongoose.model('Animal',AnimalSchema)

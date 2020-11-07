@@ -4,6 +4,7 @@ import News  from '../models/news';
 import Animal from '../models/animal';
 import jwt from 'jsonwebtoken';
 import checkToken from '../utils/checkToken';
+import mongoose from 'mongoose';
 
 class Panel {
 
@@ -14,6 +15,7 @@ class Panel {
         this.router.get('/news/overview',this.getNews);
         this.router.post('/survey/new',this.newSurvey);
         this.router.put('/survey/overview',this.getSurveys);
+        this.router.patch('/survey/accept',this.acceptSurvey);
         this.router.post('/walk/new',this.newWalk);
     }
 
@@ -99,7 +101,7 @@ class Panel {
 
     newWalk = async (req:Request,res:Response) => {
         try{ 
-            const {startTime,endTime,date} = req.body
+            const {startTime,endTime,date,category} = req.body
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
             const numbersOfWalks = await User.find({
               walks:{
@@ -107,15 +109,71 @@ class Panel {
                   startTime:startTime
               }  
             })
-            const numbersOfAnimals = await Animal.find()
+            const numbersOfAnimals = await Animal.find({
+                category:category
+            })
             console.log('walks: ',numbersOfWalks)
             console.log('animals: ',numbersOfAnimals.length)
-
+            if(numbersOfAnimals>numbersOfWalks) {
+               const user = await User.updateOne({
+                    authId:decodedToken.authId
+                },{
+                    startTime:startTime,
+                    endTime:endTime
+                })
+                if(user) {
+                    res.status(200).json('success')
+                } else res.status(403).json('failure')
+            }
         }catch(error) {
             console.log('error:',error)
             res.status(500).json('Something went wrong');
         }
     }
+
+    acceptSurvey = async  (req:Request,res:Response) =>{
+            try{
+                const {id} = req.body
+                const decodedToken:any = checkToken(req.body.token,req.cookies.token);
+                console.log('id',id)
+                console.log('decodedToken',decodedToken);
+                const user = await User.updateOne(
+                    {
+                       "authId":decodedToken.authId,
+                        "survey":{
+                            "$elemMatch":{
+                                "_id":id
+                            }
+                        }
+                    },{
+                        "survey.$.isAccepted":true
+                    }                    
+                )
+                console.log('user',user)
+                res.status(200).json(user)
+            }catch(error) {
+                console.log('eror',error)
+                res.status(500).json('Something went wrong')
+            }
+    }
 }
 
 export default Panel
+
+/*
+  const user = await User.aggregate(
+                    [
+                     {
+                        $project:{
+                            survey:{
+                                $filter:{
+                                    input:"$survey",
+                                    as: "survey",
+                                    cond:{$eq:["$$survey._id",new mongoose.Types.ObjectId('5fa6e94ad0c64077ec309b8c')]}
+                                }
+                            }
+                        }
+                     }
+                    ]                    
+                )
+*/
