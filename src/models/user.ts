@@ -48,6 +48,10 @@ const UserSchema = new mongoose.Schema({
         date:{ 
             type:Date,
             default:new Date(Date.now())
+        },
+        isAccepted:{
+            type:Boolean,
+            default:false
         }
     }]
 })

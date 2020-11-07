@@ -15,7 +15,7 @@ class User {
      newDonate =  async (req:Request,res:Response) => {
          try{      
              const amount:string = req.body.amount;
-             const decodedToken:any = checkToken(req.body.token,req.body.cookies)
+             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
              console.log('new donate')
              const user = await UserModel.findOne({
                      authId:decodedToken.authId

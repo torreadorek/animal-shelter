@@ -20,7 +20,7 @@ class Panel {
     newNews = async (req:Request,res:Response) => {
         try{ 
             const {title,description} = req.body
-            const decodedToken:any =  checkToken(req.body.token,req.body.cookies)
+            const decodedToken:any =  checkToken(req.body.token,req.cookies.token)
             await News.create({
                 title:title,
                 description:description
@@ -56,7 +56,7 @@ class Panel {
     newSurvey =  async (req:Request,res:Response) => {
         try{
             const {answers} = req.body
-            const decodedToken:any =  checkToken(req.body.token,req.body.cookies)
+            const decodedToken:any =  checkToken(req.body.token,req.cookies.token)
           const user =  await User.updateOne({
                 authId:decodedToken.authId
             },{   
@@ -78,7 +78,7 @@ class Panel {
 
     getSurveys = async (req:Request,res:Response) => {
         try{
-            const decodedToken:any =  checkToken(req.body.token,req.body.cookies)
+            const decodedToken:any =  checkToken(req.body.token,req.cookies.token)
           const user = await User.findOne({authId:decodedToken.authId})
             .then( async user=>{
                 if(user) {
@@ -100,7 +100,7 @@ class Panel {
     newWalk = async (req:Request,res:Response) => {
         try{ 
             const {startTime,endTime,date} = req.body
-            const decodedToken:any = checkToken(req.body.token,req.body.cookies)
+            const decodedToken:any = checkToken(req.body.token,req.cookies.token)
             const numbersOfWalks = await User.find({
               walks:{
                   date:date,

@@ -90,7 +90,7 @@ class Auth  {
 
         check = async (req:Request,res:Response) => {
             try{
-                const decodedToken:any = checkToken(req.body.token,req.body.cookies)
+                const decodedToken:any =  checkToken(req.body.token,req.cookies.token)
                 await User.findOne({
                     authId:decodedToken.authId
                 }).then((user:any)=>{

@@ -45,7 +45,7 @@ class Animals {
         new =  async (req:Request,res:Response) => {
             try{
                 const {name,category,age,description} = req.body
-                 const decodedToken:any =  checkToken(req.body.token,req.body.cookies)
+                 const decodedToken:any =  checkToken(req.body.token,req.cookies.token)
                 
                  console.log('decoded: ',decodedToken)
                 const user = await User.findOne({
@@ -78,7 +78,7 @@ class Animals {
 
         delete = async (req:Request,res:Response) => {
             const {id} = req.body;
-            const decodedToken:any = checkToken(req.body.token,req.body.cookies)
+            const decodedToken:any = checkToken(req.body.token,req.cookies.token)
             try{ 
                 await User.findOne({authId:decodedToken.authId})
                 .then( async user=>{
