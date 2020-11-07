@@ -86,7 +86,7 @@ class Animals {
                 .then( async user=>{
                     console.log('user',user)
                     if(user) {
-                        const animal = await Animal.deleteOne({
+                        const animal = await Animal.findOneAndDelete({
                             _id:id
                         })
                         if(animal) { 
