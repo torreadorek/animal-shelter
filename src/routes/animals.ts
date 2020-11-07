@@ -22,7 +22,7 @@ class Animals {
         this.router.get('/overview',this.overview);     
         this.router.post('/new',this.upload.single('photo'),this.new);
         this.router.post('/upload/image',this.image);
-        this.router.post('/delete',this.delete);
+        this.router.delete('/delete/:id',this.delete);
     }
 
         overview = async (req:Request,res:Response) => {
@@ -77,7 +77,7 @@ class Animals {
         }
 
         delete = async (req:Request,res:Response) => {
-            const {id} = req.body;
+            const {id} = req.params;
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
             console.log('id: ',id)
             console.log('decodedToken: ',decodedToken)
