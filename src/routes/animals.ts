@@ -22,7 +22,7 @@ class Animals {
         this.router.get('/overview',this.overview);     
         this.router.post('/new',this.upload.single('photo'),this.new);
         this.router.post('/upload/image',this.image);
-        this.router.delete('/delete',this.delete);
+        this.router.post('/delete',this.delete);
     }
 
         overview = async (req:Request,res:Response) => {
