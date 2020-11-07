@@ -79,14 +79,18 @@ class Animals {
         delete = async (req:Request,res:Response) => {
             const {id} = req.body;
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
+            console.log('id: ',id)
+            console.log('decodedToken: ',decodedToken)
             try{ 
                 await User.findOne({authId:decodedToken.authId})
                 .then( async user=>{
+                    console.log('user',user)
                     if(user) {
                         const animal = await Animal.deleteOne({
                             _id:id
                         })
                         if(animal) { 
+                            console.log('animal: ',animal)
                             res.status(200).json('success')
                         } 
                         else res.status(404).json('failure')
