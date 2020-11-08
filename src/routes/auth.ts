@@ -77,7 +77,7 @@ class Auth  {
                           console.log('user: ',user);
                           console.log('userInfo',userInfo);
                           const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY as string
-                          let token =  jwt.sign({authId:userInfo?.id},TOKEN_SECRET_KEY)
+                          let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY)
                           res.cookie('token',token,{httpOnly:true})
                           res.status(200).json({token:token,name:userInfo.data.name,isAdmin:user.isAdmin});
                           res.end()
