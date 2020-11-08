@@ -16,7 +16,7 @@ class Panel {
         this.router.post('/survey/new',this.newSurvey);
         this.router.put('/survey/overview',this.getSurveys);
         this.router.patch('/survey/accept',this.acceptSurvey);
-        this.router.post('/walk/new',this.newWalk);
+        this.router.patch('/walk/new',this.newWalk);
     }
 
     newNews = async (req:Request,res:Response) => {
@@ -101,30 +101,23 @@ class Panel {
 
     newWalk = async (req:Request,res:Response) => {
         try{ 
-            const {startTime,endTime,date,category} = req.body
+            const {date} = req.body
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
-            const numbersOfWalks = await User.find({
-              walks:{
-                  date:date,
-                  startTime:startTime
-              }  
-            })
-            const numbersOfAnimals = await Animal.find({
-                category:category
-            })
-            console.log('walks: ',numbersOfWalks)
-            console.log('animals: ',numbersOfAnimals.length)
-            if(numbersOfAnimals>numbersOfWalks) {
-               const user = await User.updateOne({
+               const user = await User.findOneAndUpdate({
                     authId:decodedToken.authId
                 },{
-                    startTime:startTime,
-                    endTime:endTime
+                    $push:{
+                        walks:{
+                            date:date
+                        }
+                    }
                 })
                 if(user) {
-                    res.status(200).json('success')
+                    const walks = await User.findOne({authId:decodedToken.authId})
+                    .select('walks')
+                    res.status(200).json({message:'success',walks:walks})
                 } else res.status(403).json('failure')
-            }
+            
         }catch(error) {
             console.log('error:',error)
             res.status(500).json('Something went wrong');
