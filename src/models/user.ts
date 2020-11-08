@@ -28,10 +28,7 @@ const UserSchema = new mongoose.Schema({
     }],
     walks:[{
         distance:Number,
-        date:{
-            type:Date,
-            default:new Date(Date.now())
-        },
+        date:Date,
         startTime:String,
         endTime:String
     }],

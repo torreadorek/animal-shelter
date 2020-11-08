@@ -15,6 +15,7 @@ class Auth  {
         this.router.post('/google',this.google);
         this.router.post('/facebook',this.facebook);
         this.router.post('/check',this.check);
+        this.router.post('/logout',this.logout);
     }
 
     google = async (req:Request,res:Response) =>{
@@ -102,6 +103,18 @@ class Auth  {
                 })
             }catch(error){
                 console.log('error',error)
+                res.status(500).json('Something went wrong')
+            }
+        }
+
+        logout = (req:Request,res:Response) =>{
+            try{
+                const decodedToken:any = checkToken(req.body.token,req.cookies.token);
+                console.log('req cookies',req.cookies.token);
+                res.clearCookie('token');
+                console.log('delete token')
+                res.status(200).json('success');
+            }catch(error) { 
                 res.status(500).json('Something went wrong')
             }
         }
