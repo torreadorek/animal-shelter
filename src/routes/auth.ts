@@ -21,6 +21,7 @@ class Auth  {
     google = async (req:Request,res:Response) =>{
         try{
             const {token} = req.body;   
+            console.log('token: ',token)
             const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
             const user = await  client.verifyIdToken({idToken:token,audience:[<string>process.env.GOOGLE_CLIENT_ID,<string>process.env.MOBILE_GOOGLE_CLIENT_ID]});
             console.log('user: ',user)
@@ -38,6 +39,7 @@ class Auth  {
                 },(error,user)=>{
                     if(error) res.status(403).json('failure');
                     if(user) {
+                        console.log('user inside',user)
                         const TOKEN_SECRET_KEY = <string>process.env.TOKEN_SECRET_KEY;
                         let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY);
                         if(payload!.azp===process.env.GOOGLE_CLIENT_ID) {
