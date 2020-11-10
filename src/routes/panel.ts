@@ -16,7 +16,7 @@ class Panel {
         this.router.post('/survey/new',this.newSurvey);
         this.router.put('/survey/overview',this.getSurveys);
         this.router.patch('/survey/accept',this.acceptSurvey);
-        this.router.patch('/walk/new',this.newWalk);
+        
     }
 
     newNews = async (req:Request,res:Response) => {
@@ -99,33 +99,9 @@ class Panel {
         }
     }
 
-    newWalk = async (req:Request,res:Response) => {
-        try{ 
-            const {startTime,endTime} = req.body
-            const decodedToken:any = checkToken(req.body.token,req.cookies.token)
-            console.log(`data: ${startTime} ${endTime}`)
-               const user = await User.findOneAndUpdate({
-                    authId:decodedToken.authId
-                },{
-                    $push:{
-                        walks:{
-                            startTime:startTime,
-                            endTime:endTime
-                        }
-                    }
-                })
-                if(user) {
-                    console.log('user',user)
-                    const walks = await User.findOne({authId:decodedToken.authId})
-                    .select('walks')
-                    res.status(200).json({message:'success',walks:walks})
-                } else res.status(403).json('failure')
-            
-        }catch(error) {
-            console.log('error:',error)
-            res.status(500).json('Something went wrong');
-        }
-    }
+   
+
+    
 
     acceptSurvey = async  (req:Request,res:Response) =>{
             try{
