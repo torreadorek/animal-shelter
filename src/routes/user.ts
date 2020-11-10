@@ -72,11 +72,10 @@ class User {
      getWalks = async (req:Request,res:Response) => {
         try{ 
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
+                const date = new Date()
+                console.log('date',date)
                const walks = await UserModel.findOne({
-                    authId:decodedToken.authId,
-                    startTime:{
-                        $gt:new Date(Date.now())
-                    }
+                    authId:decodedToken.authId
                }).select('walks')
                 if(walks) {
                     console.log('user',walks)
