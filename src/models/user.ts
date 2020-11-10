@@ -28,9 +28,8 @@ const UserSchema = new mongoose.Schema({
     }],
     walks:[{
         distance:Number,
-        date:Date,
-        startTime:String,
-        endTime:String
+        startTime:Date,
+        endTime:Date
     }],
     isAdmin:{
         type:Boolean,

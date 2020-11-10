@@ -59,7 +59,7 @@ class Auth  {
 
     facebook = async (req:Request,res:Response) =>{
         try{
-            const {token} = req.body
+            const {token} = req.body;
             console.log('TOKEN: ',token);
               await axios.get(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`)
               .then( async (userInfo:any)=>{
@@ -82,7 +82,7 @@ class Auth  {
                           const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY as string
                           let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY)
                           res.cookie('token',token,{httpOnly:true})
-                          res.status(200).json({token:token,name:userInfo.data.name,isAdmin:user.isAdmin});
+                          res.status(200).json({name:user.name,email:user.email,isAdmin:user.isAdmin,balance:user.balance});
                           res.end()
                       }
                   })

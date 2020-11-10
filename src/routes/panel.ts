@@ -101,18 +101,21 @@ class Panel {
 
     newWalk = async (req:Request,res:Response) => {
         try{ 
-            const {date} = req.body
+            const {startTime,endTime} = req.body
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
+            console.log(`data: ${startTime} ${endTime}`)
                const user = await User.findOneAndUpdate({
                     authId:decodedToken.authId
                 },{
                     $push:{
                         walks:{
-                            date:date
+                            startTime:startTime,
+                            endTime:endTime
                         }
                     }
                 })
                 if(user) {
+                    console.log('user',user)
                     const walks = await User.findOne({authId:decodedToken.authId})
                     .select('walks')
                     res.status(200).json({message:'success',walks:walks})
