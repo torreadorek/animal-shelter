@@ -52,6 +52,7 @@ class Auth  {
                 })
             } 
         }catch(error) {
+            console.log('error',error)
             res.status(500).json('Something went wrong')
         }
     }   
