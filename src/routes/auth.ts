@@ -47,7 +47,7 @@ class Auth  {
                             res.cookie('token',token,{httpOnly:true});
                             res.status(200).json({name:user.name,email:user.email,picture:user.picture,isAdmin:user.isAdmin,balance:user.balance});
                         } 
-                        if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({token:token,name:user.name,email:user.email,isAdmin:user.isAdmin,balance:user.balance});
+                        if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({token:token,name:user.name,email:user.email,picture:user.picture,isAdmin:user.isAdmin,balance:user.balance});
                         res.end();
                     }
                 })
