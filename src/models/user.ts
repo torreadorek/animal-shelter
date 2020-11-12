@@ -15,12 +15,12 @@ const UserSchema = new mongoose.Schema({
         }
     },
     name:String,
+    picture:String,
     balance:{
-        type:Number,
-        default:0
+        type:Number
     },
-    donates:[{
-        amount:mongoose.Types.Decimal128,
+    donation:[{
+        amount:Number,
         date:{
             type:Date,
             default:new Date(Date.now())

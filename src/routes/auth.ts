@@ -31,7 +31,8 @@ class Auth  {
                     serviceId:payload!.sub
                 },{
                     serviceId:payload!.sub,
-                    name:payload!.name
+                    name:payload!.name,
+                    picture:payload!.picture
                 },{
                     upsert:true,
                     new:true,
@@ -44,7 +45,7 @@ class Auth  {
                         let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY);
                         if(payload!.azp===process.env.GOOGLE_CLIENT_ID) {
                             res.cookie('token',token,{httpOnly:true});
-                            res.status(200).json({name:user.name,email:user.email,isAdmin:user.isAdmin,balance:user.balance});
+                            res.status(200).json({name:user.name,email:user.email,picture:user.picture,isAdmin:user.isAdmin,balance:user.balance});
                         } 
                         if(payload!.azp===process.env.MOBILE_GOOGLE_CLIENT_ID)  res.status(200).json({token:token,name:user.name,email:user.email,isAdmin:user.isAdmin,balance:user.balance});
                         res.end();
@@ -82,7 +83,7 @@ class Auth  {
                           const TOKEN_SECRET_KEY = process.env.TOKEN_SECRET_KEY as string
                           let token =  jwt.sign({authId:user.authId},TOKEN_SECRET_KEY)
                           res.cookie('token',token,{httpOnly:true})
-                          res.status(200).json({token:token,name:user.name,email:user.email,isAdmin:user.isAdmin,balance:user.balance});
+                          res.status(200).json({token:token,name:user.name,email:user.email,picture:user.picture,isAdmin:user.isAdmin,balance:user.balance});
                           res.end()
                       }
                   })
@@ -100,7 +101,7 @@ class Auth  {
                 }).then((user:any)=>{
                     console.log('user',user)
                     if(user) {
-                        res.status(200).json({name:user.name,isAdmin:user.isAdmin})
+                        res.status(200).json({name:user.name,picture:user.picture,isAdmin:user.isAdmin})
                     } 
                     else  res.status(403).json('failure')
                 })

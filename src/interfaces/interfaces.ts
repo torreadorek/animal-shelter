@@ -5,5 +5,15 @@ export default interface UserDoc extends mongoose.Document {
     name:string,
     isAdmin:boolean,
     balance:Number,
-    email:String
+    email:String,
+    picture:String,
+    donation:[{
+        amount:Number
+    }],
+    walks:[{
+        steps:Number
+    }],
+    help:[{
+        startTime:Date
+    }]
 }
