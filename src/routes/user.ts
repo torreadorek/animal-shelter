@@ -78,7 +78,7 @@ class User {
                      const currentDate = new Date(Date.now());
                      const filteredDates = data.help.filter(help=>help.startTime>currentDate);
                     console.log('filteredDates',filteredDates);
-                    res.status(200).json({message:'success',filteredDates:filteredDates,data:data});
+                    res.status(200).json({message:'success',help:filteredDates});
                 } else res.status(403).json('failure')
             
         }catch(error) {
