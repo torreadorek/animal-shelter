@@ -13,6 +13,7 @@ class User {
         this.router.post('/walk/new',this.newWalk);
         this.router.put('/help/overview',this.getHelp);
         this.router.post('/help/new',this.newHelp);
+        this.router.delete('/help/delete',this.deleteHelp);
         this.router.put('/statistics/overview',this.getStatistics);
     }
 
@@ -154,7 +155,27 @@ class User {
             res.status(500).json('Something went wrong');
         }
     }
-
+    deleteHelp = async  (req:Request,res:Response)=>{
+       try{
+        const {id} = req.body;
+        const decodedToken:any = checkToken(req.body.token,req.cookies.token);
+        const user = await UserModel.findOneAndUpdate({   
+            authId:decodedToken.authId
+        },{
+            $pull:{
+                help:{
+                    _id:id
+                }
+            }
+        })
+        if(user) {
+            res.status(200).json('success');
+            
+        } else res.status(403).json('failure');
+       } catch(error) {
+            res.status(500).json('Something went wrong');
+       }
+    }
 }
 
 export default User

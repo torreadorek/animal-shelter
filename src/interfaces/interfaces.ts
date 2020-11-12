@@ -14,6 +14,7 @@ export default interface UserDoc extends mongoose.Document {
         steps:Number
     }],
     help:[{
+        _id:mongoose.Types.ObjectId,
         startTime:Date
     }]
 }
