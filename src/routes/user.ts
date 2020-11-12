@@ -157,7 +157,7 @@ class User {
     }
     deleteHelp = async  (req:Request,res:Response)=>{
        try{
-        const {id} = req.body;
+        const id:any = req.params.id;
         const decodedToken:any = checkToken(req.body.token,req.cookies.token);
         const user = await UserModel.findOneAndUpdate({   
             authId:decodedToken.authId
