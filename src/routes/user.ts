@@ -13,7 +13,7 @@ class User {
         this.router.post('/walk/new',this.newWalk);
         this.router.put('/help/overview',this.getHelp);
         this.router.post('/help/new',this.newHelp);
-        this.router.delete('/help/delete',this.deleteHelp);
+        this.router.delete('/help/delete/:id',this.deleteHelp);
         this.router.put('/statistics/overview',this.getStatistics);
     }
 
@@ -173,6 +173,7 @@ class User {
             
         } else res.status(403).json('failure');
        } catch(error) {
+           console.log('error',error)
             res.status(500).json('Something went wrong');
        }
     }
