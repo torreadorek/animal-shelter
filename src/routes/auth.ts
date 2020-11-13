@@ -70,7 +70,8 @@ class Auth  {
                       serviceId:userInfo.id
                   },{
                       serviceId:userInfo.id,
-                      name:userInfo.data.name
+                      name:userInfo.data.name,
+                      picture:userInfo.data.picture
                   },{
                       upsert:true,
                       new:true,
