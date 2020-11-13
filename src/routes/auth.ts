@@ -4,6 +4,8 @@ import  User from '../models/user';
 import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
 import checkToken from '../utils/checkToken';
+import validation from '../utils/validation';
+import schema from '../utils/schema';
 require('dotenv').config({path:__dirname+`/config/.env`});
 
 
@@ -12,10 +14,10 @@ class Auth  {
     private router = express.Router();
 
     constructor(){
-        this.router.post('/google',this.google);
-        this.router.post('/facebook',this.facebook);
-        this.router.post('/check',this.check);
-        this.router.post('/logout',this.logout);
+        this.router.post('/google',validation.body(schema.token),this.google);
+        this.router.post('/facebook',validation.body(schema.token),this.facebook);
+        this.router.post('/check',validation.token(schema.token),this.check);
+        this.router.post('/logout',validation.token(schema.token),this.logout);
     }
 
     google = async (req:Request,res:Response) =>{
@@ -96,12 +98,13 @@ class Auth  {
         check = async (req:Request,res:Response) => {
             try{
                 const decodedToken:any =  checkToken(req.body.token,req.cookies.token)
+                console.log(req.body.token.length)
                 await User.findOne({
                     authId:decodedToken.authId
                 }).then((user:any)=>{
                     console.log('user',user)
                     if(user) {
-                        res.status(200).json({name:user.name,picture:user.picture,isAdmin:user.isAdmin})
+                        res.status(200).json({name:user.name,picture:user.picture,balance:user.balance,isAdmin:user.isAdmin})
                     } 
                     else  res.status(403).json('failure')
                 })

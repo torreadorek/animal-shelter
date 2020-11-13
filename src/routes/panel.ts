@@ -1,21 +1,21 @@
 import express,{Request,Response} from 'express';
 import User from '../models/user';
 import News  from '../models/news';
-import Animal from '../models/animal';
-import jwt from 'jsonwebtoken';
 import checkToken from '../utils/checkToken';
-import mongoose from 'mongoose';
+import validation from '../utils/validation';
+import schema from '../utils/schema';
 
 class Panel {
 
     private router = express.Router();
 
     constructor() {
-        this.router.post('/news/new',this.newNews);
         this.router.get('/news/overview',this.getNews);
-        this.router.post('/survey/new',this.newSurvey);
+        this.router.use(validation.token(schema.token));
+        this.router.post('/news/new',validation.body(schema.newNews),this.newNews);
+        this.router.post('/survey/new',validation.body(schema.newSurvey),this.newSurvey);
         this.router.put('/survey/overview',this.getSurveys);
-        this.router.patch('/survey/accept',this.acceptSurvey);
+        this.router.patch('/survey/accept',validation.body(schema.acceptSurvey),this.acceptSurvey);
         
     }
 

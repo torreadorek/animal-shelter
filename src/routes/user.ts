@@ -3,17 +3,20 @@ import  UserModel from '../models/user';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import checkToken from '../utils/checkToken';
+import validation from '../utils/validation';
+import schema from '../utils/schema';
 
 class User {
 
     private router = express.Router();
 
     constructor(){
-        this.router.post('/donation/new',this.newDonate);
-        this.router.post('/walk/new',this.newWalk);
+        this.router.use(validation.token(schema.token));
+        this.router.post('/donation/new',validation.body(schema.newDonate),this.newDonate);
+        this.router.post('/walk/new',validation.body(schema.newWalk),this.newWalk);
         this.router.put('/help/overview',this.getHelp);
-        this.router.post('/help/new',this.newHelp);
-        this.router.delete('/help/delete/:id',this.deleteHelp);
+        this.router.post('/help/new',validation.body(schema.newHelp),this.newHelp);
+        this.router.delete('/help/delete/:id',validation.params(schema.deleteHelp),this.deleteHelp);
         this.router.put('/statistics/overview',this.getStatistics);
     }
 

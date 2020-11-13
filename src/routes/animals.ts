@@ -4,6 +4,8 @@ import User from '../models/user';
 import multer from 'multer'; 
 import * as jwt from 'jsonwebtoken';
 import checkToken from '../utils/checkToken';
+import validation from '../utils/validation';
+import schema from '../utils/schema';
 
 class Animals { 
 
@@ -16,13 +18,23 @@ class Animals {
             cb(null,`${file.fieldname}-${Date.now()}.png`);
         }
     })
-    private  upload = multer({storage:this.storage});
+    private  upload = multer({
+        storage:this.storage,
+        limits:{
+            fields:5,
+            fileSize:150000000
+        },
+        fileFilter: (req,file,cb)=>{
+            this.checkFileType(file,cb);
+        }
+    });
 
     constructor() {
-        this.router.get('/overview',this.overview);     
+        this.router.get('/overview',this.overview);
+        this.router.use(validation.token(schema.token));     
         this.router.post('/new',this.upload.single('photo'),this.new);
-        this.router.post('/upload/image',this.image);
-        this.router.delete('/delete/:id',this.delete);
+        this.router.delete('/delete/:id',validation.params(schema.delete),this.delete);
+        this.router.patch('/edit',validation.body(schema.edit),this.edit);
     }
 
         overview = async (req:Request,res:Response) => {
@@ -76,6 +88,15 @@ class Animals {
             res.status(200).json({name:req.file.filename})
         }
 
+        checkFileType = (file:any,cb:any) => {
+            const filetypes= /jpeg|jpg|png/;
+            const filename =  /^[a-z0-9.-]*$/.test(file.originalname.toLowerCase())
+            const filetype = filetypes.test(file.mimetype);
+            if(filetype && filename ) {
+                return cb(null,true);
+            } else cb('Error: only images!');
+        }
+
         delete = async (req:Request,res:Response) => {
             const {id} = req.params;
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
@@ -100,6 +121,30 @@ class Animals {
                 console.log('error',error)
                 res.status(500).json('Something went wrong');
             }
+        }
+
+        edit = async (req:Request,res:Response)=>{
+           try{
+               const {id,name,age,category,description} = req.body; 
+               const decodedToken:any = checkToken(req.body.token,req.cookies.token);
+              const animal =  await Animal.updateOne({
+                   _id:id
+               },{
+                   $set:{
+                       name,
+                       age,
+                       category,
+                       description
+                   }
+               })
+               console.log('animal ',animal)
+               if(animal) res.status(200).json('success')
+               else res.status(403).json('failure')
+
+           }catch(error){
+               console.log('error',error)
+                res.status(500).json('Something went wrong');
+           }
         }
 }
 
