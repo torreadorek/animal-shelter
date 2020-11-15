@@ -127,6 +127,7 @@ class Animals {
            try{
                const {id,name,age,category,description} = req.body; 
                const decodedToken:any = checkToken(req.body.token,req.cookies.token);
+               console.log('req body: ',req.body);
               const animal =  await Animal.updateOne({
                    _id:id
                },{
@@ -138,7 +139,7 @@ class Animals {
                    }
                })
                console.log('animal ',animal)
-               if(animal) res.status(200).json('success')
+               if(animal.nModified) res.status(200).json('success')
                else res.status(403).json('failure')
 
            }catch(error){
