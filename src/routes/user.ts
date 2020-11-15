@@ -41,7 +41,8 @@ class User {
                         },
                         balance:balance
                     })
-                    if(donate.isModified===1) res.status(200).json({message:'success',balance}) 
+                    console.log('donate:',donate)
+                    if(donate.nModified===1) res.status(200).json({message:'success',balance}) 
                     else res.status(403).json('failure')
                     
                  }
