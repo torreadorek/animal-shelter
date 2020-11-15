@@ -31,7 +31,7 @@ class User {
                  if(user) {
                      const balance:Number= parseInt(user!.balance.toString()) + parseInt(amount.toString());
                      console.log('balance: ',balance)
-                     await UserModel.updateOne({
+                     const donate = await UserModel.updateOne({
                         authId:decodedToken.authId
                     },{
                         $push:{
@@ -41,7 +41,9 @@ class User {
                         },
                         balance:balance
                     })
-                    res.status(200).json({message:'success',balance})
+                    if(donate.isModified===1) res.status(200).json({message:'success',balance}) 
+                    else res.status(403).json('failure')
+                    
                  }
 
          }catch(error) {
