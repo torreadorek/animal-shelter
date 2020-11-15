@@ -56,6 +56,7 @@ class User {
       try{
         const {steps} = req.body;
         const decodedToken:any = checkToken(req.body.token,req.cookies.token);
+        console.log(`${decodedToken} ${steps}`);
         const newHelp = await UserModel.updateOne({
             authId:decodedToken.authId
         },{
@@ -65,6 +66,7 @@ class User {
                 }
             }
         })
+        console.log('help: ',newHelp);
         if(newHelp) res.status(200).json('success');
         else res.status(403).json('failure');
       }catch(error){

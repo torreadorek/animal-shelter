@@ -9,7 +9,7 @@ export  = {
         amount: joi.number().required()
     }).options({allowUnknown:true}),
     newWalk:joi.object({     
-        steps: joi.string().required().min(100)
+        steps: joi.number().required()
     }).options({allowUnknown:true}),
     newHelp:joi.object({    
         startTime: joi.date().required(),
