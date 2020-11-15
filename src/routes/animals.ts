@@ -139,7 +139,7 @@ class Animals {
                    }
                })
                console.log('animal ',animal)
-               if(animal.nModified) res.status(200).json('success')
+               if(animal.nModified===1) res.status(200).json('success')
                else res.status(403).json('failure')
 
            }catch(error){
