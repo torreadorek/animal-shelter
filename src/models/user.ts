@@ -17,7 +17,8 @@ const UserSchema = new mongoose.Schema({
     name:String,
     picture:String,
     balance:{
-        type:Number
+        type:Number,
+        default:0
     },
     donation:[{
         amount:Number,
