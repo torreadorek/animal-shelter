@@ -78,7 +78,7 @@ class Auth  {
                       setDefaultsOnInsert:true
                   },(error,user)=>{
                       if(error) {
-                          res.status(403).json('failure');
+                          res.status(401).json('failure');
                       } 
                       if(user) {
                           console.log('user: ',user);
@@ -107,7 +107,7 @@ class Auth  {
                     if(user) {
                         res.status(200).json({name:user.name,picture:user.picture,balance:user.balance,isAdmin:user.isAdmin})
                     } 
-                    else  res.status(403).json('failure')
+                    else  res.status(401).json('failure')
                 })
             }catch(error){
                 console.log('error',error)

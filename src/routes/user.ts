@@ -168,7 +168,8 @@ class User {
         const id:any = req.params.id;
         const decodedToken:any = checkToken(req.body.token,req.cookies.token);
         const user = await UserModel.findOneAndUpdate({   
-            authId:decodedToken.authId
+            authId:decodedToken.authId,
+            isAdmin:true
         },{
             $pull:{
                 help:{

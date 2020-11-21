@@ -4,6 +4,7 @@ import News  from '../models/news';
 import checkToken from '../utils/checkToken';
 import validation from '../utils/validation';
 import schema from '../utils/schema';
+import Animal from '../models/animal';
 
 class Panel {
 
@@ -16,7 +17,7 @@ class Panel {
         this.router.post('/survey/new',validation.body(schema.newSurvey),this.newSurvey);
         this.router.put('/survey/overview',this.getSurveys);
         this.router.patch('/survey/accept',validation.body(schema.acceptSurvey),this.acceptSurvey);
-        
+        this.router.delete('/news/delete/:id',this.deleteNews);
     }
 
     newNews = async (req:Request,res:Response) => {
@@ -112,6 +113,7 @@ class Panel {
                 const user = await User.updateOne(
                     {
                        "authId":decodedToken.authId,
+                       "isAdmin":true,
                         "survey":{
                             "$elemMatch":{
                                 "_id":id
@@ -128,24 +130,36 @@ class Panel {
                 res.status(500).json('Something went wrong')
             }
     }
+
+    deleteNews =  async (req:Request,res:Response)=>{
+        const {id} = req.params;
+            const decodedToken:any = checkToken(req.body.token,req.cookies.token)
+            console.log('id: ',id)
+            console.log('decodedToken: ',decodedToken)
+            try{ 
+                await User.findOne({
+                    authId:decodedToken.authId,
+                    isAdmin:true
+                })
+                .then( async user=>{
+                    // console.log('user',user)
+                    if(user) {
+                        const news = await News.findOneAndDelete({
+                            _id:id
+                        })
+                        if(news) { 
+                            console.log('news ',news)
+                            res.status(200).json('success')
+                        } 
+                        else res.status(404).json('No news with this id');
+                    } else res.status(403).json('Cannot find User with this id')
+                })
+            }catch(error) {
+                console.log('error',error)
+                res.status(500).json('Something went wrong');
+            }
+    }
 }
 
 export default Panel
 
-/*
-  const user = await User.aggregate(
-                    [
-                     {
-                        $project:{
-                            survey:{
-                                $filter:{
-                                    input:"$survey",
-                                    as: "survey",
-                                    cond:{$eq:["$$survey._id",new mongoose.Types.ObjectId('5fa6e94ad0c64077ec309b8c')]}
-                                }
-                            }
-                        }
-                     }
-                    ]                    
-                )
-*/

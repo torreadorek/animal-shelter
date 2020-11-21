@@ -6,7 +6,7 @@ export  = {
         token: joi.string().min(100).required()
     }).options({allowUnknown:true}),
     newDonate: joi.object({     
-        amount: joi.number().required()
+        amount: joi.number().min(0).max(10000).required()
     }).options({allowUnknown:true}),
     newWalk:joi.object({     
         steps: joi.number().required()

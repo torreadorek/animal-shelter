@@ -35,6 +35,7 @@ class Animals {
         this.router.post('/new',this.upload.single('photo'),this.new);
         this.router.delete('/delete/:id',validation.params(schema.delete),this.delete);
         this.router.patch('/edit',validation.body(schema.edit),this.edit);
+        this.router.get('/random',this.random);
     }
 
         overview = async (req:Request,res:Response) => {
@@ -103,7 +104,10 @@ class Animals {
             console.log('id: ',id)
             console.log('decodedToken: ',decodedToken)
             try{ 
-                await User.findOne({authId:decodedToken.authId})
+                await User.findOne({
+                    authId:decodedToken.authId,
+                    isAdmin:true
+                })
                 .then( async user=>{
                     console.log('user',user)
                     if(user) {
@@ -146,6 +150,15 @@ class Animals {
                console.log('error',error)
                 res.status(500).json('Something went wrong');
            }
+        }
+
+        random =  async (req:Request,res:Response)=>{
+           const animals = await Animal.aggregate([
+               {$sample:{size:4}}
+           ])
+
+           if(animals) res.status(200).json(animals)
+           else res.status(403).json('failure')
         }
 }
 
