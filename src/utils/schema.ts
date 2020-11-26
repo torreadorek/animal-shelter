@@ -23,7 +23,18 @@ export  = {
         description: joi.string().required().max(500)
     }).options({allowUnknown:true}),
     newSurvey:joi.object({
-        answers:joi.object().required()
+        answers:joi.object({
+            answer1:joi.string().min(1).max(50),
+            answer2:joi.string().min(1).max(50),
+            answer3:joi.string().min(1).max(50),
+            answer4:joi.string().min(1).max(50),
+            answer5:joi.string().min(1).max(50),
+            answer6:joi.string().min(1).max(50),
+            answer7:joi.string().min(1).max(50),
+            answer8:joi.string().min(1).max(50),
+            answer9:joi.string().min(1).max(50),
+            answer10:joi.string().min(1).max(50),
+        }).required()
     }).options({allowUnknown:true}),
     acceptSurvey:joi.object({   
         id: joi.string().required().max(30)
