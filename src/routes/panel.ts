@@ -51,7 +51,6 @@ class Panel {
             })
 
         } catch(error) {
-            console.log("eror",error)
             res.status(500).json('Something went wrong')
         }
     }
@@ -68,13 +67,11 @@ class Panel {
                             answers
                         }
                     }
-                
             })
             if(user) {
                 res.status(200).json('success')
             } else res.status(403).json('Cannot add new news')
         }catch(error) {
-            console.log('error',error)
             res.status(500).json('Something went wrong')
         }
     }
@@ -95,7 +92,6 @@ class Panel {
                 } else res.status(403).json('failure');
             })
         }catch(error) {
-            console.log('error',error)
             res.status(500).json('Something went wrong')
         }
     }
@@ -108,8 +104,6 @@ class Panel {
             try{
                 const {id} = req.body
                 const decodedToken:any = checkToken(req.body.token,req.cookies.token);
-                console.log('id',id)
-                console.log('decodedToken',decodedToken);
                 const user = await User.updateOne(
                     {
                        "authId":decodedToken.authId,
@@ -123,10 +117,8 @@ class Panel {
                         "survey.$.isAccepted":true
                     }                    
                 )
-                console.log('user',user)
                 res.status(200).json(user)
             }catch(error) {
-                console.log('eror',error)
                 res.status(500).json('Something went wrong')
             }
     }
@@ -134,8 +126,6 @@ class Panel {
     deleteNews =  async (req:Request,res:Response)=>{
         const {id} = req.params;
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
-            console.log('id: ',id)
-            console.log('decodedToken: ',decodedToken)
             try{ 
                 await User.findOne({
                     authId:decodedToken.authId,
@@ -148,14 +138,12 @@ class Panel {
                             _id:id
                         })
                         if(news) { 
-                            console.log('news ',news)
                             res.status(200).json('success')
                         } 
                         else res.status(404).json('No news with this id');
                     } else res.status(403).json('Cannot find User with this id')
                 })
             }catch(error) {
-                console.log('error',error)
                 res.status(500).json('Something went wrong');
             }
     }

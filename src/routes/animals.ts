@@ -59,8 +59,6 @@ class Animals {
             try{
                 const {name,category,age,description} = req.body
                  const decodedToken:any =  checkToken(req.body.token,req.cookies.token)
-                
-                 console.log('decoded: ',decodedToken)
                 const user = await User.findOne({
                     isAdmin:true,
                     authId:decodedToken.authId
@@ -101,8 +99,6 @@ class Animals {
         delete = async (req:Request,res:Response) => {
             const {id} = req.params;
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
-            console.log('id: ',id)
-            console.log('decodedToken: ',decodedToken)
             try{ 
                 await User.findOne({
                     authId:decodedToken.authId,
@@ -115,14 +111,12 @@ class Animals {
                             _id:id
                         })
                         if(animal) { 
-                            console.log('animal: ',animal)
                             res.status(200).json('success')
                         } 
                         else res.status(404).json('failure')
                     } else res.status(403).json('failure')
                 })
             }catch(error) {
-                console.log('error',error)
                 res.status(500).json('Something went wrong');
             }
         }
@@ -142,12 +136,10 @@ class Animals {
                        description
                    }
                })
-               console.log('animal ',animal)
                if(animal.nModified===1) res.status(200).json('success')
                else res.status(403).json('failure')
 
            }catch(error){
-               console.log('error',error)
                 res.status(500).json('Something went wrong');
            }
         }

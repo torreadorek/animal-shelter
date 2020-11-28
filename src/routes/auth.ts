@@ -55,7 +55,6 @@ class Auth  {
                 })
             } 
         }catch(error) {
-            console.log('error',error)
             res.status(500).json('Something went wrong')
         }
     }   
@@ -63,7 +62,6 @@ class Auth  {
     facebook = async (req:Request,res:Response) =>{
         try{
             const {token} = req.body;
-            console.log('TOKEN: ',token);
               await axios.get(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email`)
               .then( async (userInfo:any)=>{
                   await User.findOneAndUpdate({
@@ -118,9 +116,7 @@ class Auth  {
         logout = (req:Request,res:Response) =>{
             try{
                 const decodedToken:any = checkToken(req.body.token,req.cookies.token);
-                console.log('req cookies',req.cookies.token);
                 res.clearCookie('token');
-                console.log('delete token')
                 res.status(200).json('success');
             }catch(error) { 
                 res.status(500).json('Something went wrong')

@@ -24,7 +24,6 @@ class User {
          try{      
              const amount:Number = req.body.amount;
              const decodedToken:any = checkToken(req.body.token,req.cookies.token)
-             console.log('new donate')
              const user = await UserModel.findOne({
                      authId:decodedToken.authId
                  })
@@ -41,7 +40,6 @@ class User {
                         },
                         balance:balance
                     })
-                    console.log('donate:',donate)
                     if(donate.nModified===1) res.status(200).json({message:'success',balance}) 
                     else res.status(403).json('failure')
                     
@@ -56,7 +54,6 @@ class User {
       try{
         const {steps} = req.body;
         const decodedToken:any = checkToken(req.body.token,req.cookies.token);
-        console.log(`${decodedToken} ${steps}`);
         const newHelp = await UserModel.updateOne({
             authId:decodedToken.authId
         },{
@@ -66,11 +63,9 @@ class User {
                 }
             }
         })
-        console.log('help: ',newHelp);
         if(newHelp) res.status(200).json('success');
         else res.status(403).json('failure');
       }catch(error){
-            console.log('error:',error)
             res.status(500).json('Something went wrong');
       }
     }
@@ -79,14 +74,12 @@ class User {
         try{ 
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
                 const date = new Date(Date.now())
-                console.log('date',date)
                const data = await UserModel.findOne({
                    authId:decodedToken.authId
                }).select('help')
                 if(data) {
                      const currentDate = new Date(Date.now());
                      const filteredDates = data.help.filter(help=>help.startTime>currentDate);
-                    console.log('filteredDates',filteredDates);
                     res.status(200).json({message:'success',help:filteredDates});
                 } else res.status(403).json('failure')
             
@@ -100,7 +93,6 @@ class User {
         try{ 
             const {startTime,endTime} = req.body
             const decodedToken:any = checkToken(req.body.token,req.cookies.token)
-            console.log(`data: ${startTime} ${endTime}`)
                const user = await UserModel.findOneAndUpdate({
                     authId:decodedToken.authId
                 },{
@@ -113,15 +105,10 @@ class User {
                 })
                 if(user) {
                     const userInfo:any = user;
-                    <any>userInfo.donation.map((donation:any)=>{
-                        console.log('donation: ',donation.amount)
-                    })
-                    console.log('user',user)
                     res.status(200).json({message:'success'})
                 } else res.status(403).json('failure')
             
         }catch(error) {
-            console.log('error:',error)
             res.status(500).json('Something went wrong');
         }
 
@@ -155,7 +142,6 @@ class User {
                 rank.map(rank=>{
                     if(points>rank.from && points<rank.to) selectedRank = rank.name
                 })
-                console.log('user',user)
                 res.status(200).json({message:'success',balance:balance,steps:allSteps,rank:selectedRank,user:user});
             }
             else res.status(403).json('failure');
@@ -182,7 +168,6 @@ class User {
             
         } else res.status(403).json('failure');
        } catch(error) {
-           console.log('error',error)
             res.status(500).json('Something went wrong');
        }
     }
